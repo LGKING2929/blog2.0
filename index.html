@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dubai Diaries</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Barlow+Condensed:wght@200;300;400;500;600;700;800&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+:root {
+  --r: #bf0018;
+  --r2: #e8001f;
+  --rg: rgba(191,0,24,0.08);
+  --b: #0038c0;
+  --b2: #0052ff;
+  --bg: rgba(0,56,192,0.08);
+  --ink: #0d0d0d;
+  --ink2: #2a2a2a;
+  --ink3: #666;
+  --cream: #faf9f7;
+  --line: #ddd9d3;
+  --white: #fff;
+}
+
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: 'Barlow', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--r);
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, background 0.3s, width 0.2s, height 0.2s;
+  mix-blend-mode: multiply;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:200;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.2rem 3.5rem;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 0.8rem;
+}
+
+.nav-dot-r { width:8px; height:8px; border-radius:50%; background:var(--r); }
+.nav-dot-b { width:8px; height:8px; border-radius:50%; background:var(--b); }
+
+.nav-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.nav-right {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+
+.nav-pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--ink3);
+  transition: all 0.2s;
+}
+.nav-pill:hover { color: var(--ink); border-color: var(--ink); }
+.nav-pill.red-pill { border-color: var(--r); color: var(--r); }
+.nav-pill.blue-pill { border-color: var(--b); color: var(--b); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  padding-top: 70px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Diagonal split bg */
+.hero-split {
+  position: absolute; inset:0;
+  background: var(--white);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.hero-split::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 48%;
+  background: var(--cream);
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 0 100%);
+}
+
+/* Animated noise texture overlay */
+.hero-noise {
+  position: absolute; inset:0; z-index:1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.hero-skyline {
+  position: absolute; bottom:0; left:0; right:0; z-index:2; line-height:0;
+}
+
+.hero-body {
+  position: relative; z-index:10;
+  padding: 0 3.5rem 12vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  align-items: end;
+  min-height: calc(100vh - 70px);
+}
+
+.hero-left {
+  padding-right: 4rem;
+  padding-bottom: 5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.hero-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 300;
+  font-size: 0.7rem;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 1.8rem;
+  display: flex; align-items: center; gap: 1rem;
+  opacity:0; animation: aUp 0.7s 0.3s forwards;
+}
+.hero-eyebrow::before {
+  content:''; width:30px; height:1px; background:var(--r);
+}
+
+.hero-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(5rem, 9vw, 9.5rem);
+  font-weight: 300;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  opacity:0; animation: aUp 0.9s 0.5s forwards;
+}
+
+.hero-headline .hl-dubai {
+  display: block;
+  color: var(--ink);
+}
+.hero-headline .hl-diaries {
+  display: block;
+  color: var(--r);
+  font-style: italic;
+}
+
+.hero-sub-line {
+  margin-top: 2.2rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  color: var(--ink3);
+  max-width: 320px;
+  line-height: 1.6;
+  opacity:0; animation: aUp 0.7s 0.8s forwards;
+}
+
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 5vw;
+  padding-left: 2rem;
+  gap: 2.5rem;
+  opacity:0; animation: aRight 0.8s 0.9s forwards;
+}
+
+.hero-tag-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hero-tag-item {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.hero-tag-item:hover { transform: translateX(6px); }
+.hero-tag-item.t-red { border-left: 3px solid var(--r); }
+.hero-tag-item.t-blue { border-left: 3px solid var(--b); }
+
+.tag-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  line-height: 1;
+  opacity: 0.12;
+  flex-shrink:0;
+}
+.t-red .tag-num { color: var(--r); }
+.t-blue .tag-num { color: var(--b); }
+
+.tag-info { flex:1; }
+
+.tag-day {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+.t-red .tag-day { color: var(--r); }
+.t-blue .tag-day { color: var(--b); }
+
+.tag-place {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tag-arrow {
+  font-size: 1rem;
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.hero-tag-item:hover .tag-arrow { opacity:1; transform: translateX(4px); }
+
+/* ── COLOUR BAND ── */
+.band {
+  height: 3px;
+  background: linear-gradient(to right, var(--r) 50%, var(--b) 50%);
+}
+
+/* ── SECTION WRAPPER ── */
+.chapter {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── CHAPTER HEADER STRIP ── */
+.ch-header {
+  padding: 0 3.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+  padding-top: 80px;
+  padding-bottom: 40px;
+}
+
+.ch-index {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(5rem, 12vw, 10rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  opacity: 0.06;
+  user-select: none;
+}
+.red-ch .ch-index { color: var(--r); }
+.blue-ch .ch-index { color: var(--b); }
+
+.ch-title-block { text-align: center; }
+
+.ch-overline {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.red-ch .ch-overline { color: var(--r); }
+.blue-ch .ch-overline { color: var(--b); }
+
+.ch-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(3rem, 7vw, 6.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+.red-ch .ch-title { color: var(--r); }
+.blue-ch .ch-title { color: var(--b); }
+
+.ch-title em {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.ch-day-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 200;
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  text-align: right;
+  line-height: 2;
+  white-space: nowrap;
+}
+
+/* ── DIAGONAL DIVIDER ── */
+.diag-line {
+  height: 1px;
+  background: var(--line);
+  margin: 0 3.5rem;
+  position: relative;
+}
+.diag-line::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: -3px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+.red-ch .diag-line::before { background: var(--r); }
+.blue-ch .diag-line::before { background: var(--b); }
+
+/* ── ARTICLE BODY ── */
+.ch-body {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+  padding: 0 3.5rem;
+  margin-top: 50px;
+  margin-bottom: 80px;
+}
+
+.ch-sidebar {
+  padding-right: 3rem;
+  padding-top: 0.3rem;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 0.4rem;
+}
+
+.sidebar-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sidebar-tag {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+.red-ch .sidebar-tag { background: var(--rg); color: var(--r); }
+.blue-ch .sidebar-tag { background: var(--bg); color: var(--b); }
+
+.ch-text {
+  padding-left: 3.5rem;
+}
+
+.ch-text p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--ink2);
+  margin-bottom: 1.4rem;
+}
+
+.ch-text p:first-child::first-letter {
+  font-size: 4.5rem;
+  font-weight: 600;
+  line-height: 0.75;
+  float: left;
+  margin-right: 0.12em;
+  margin-top: 0.08em;
+  font-family: 'Cormorant Garamond', serif;
+}
+.red-ch .ch-text p:first-child::first-letter { color: var(--r); }
+.blue-ch .ch-text p:first-child::first-letter { color: var(--b); }
+
+/* ── SPIRE FOOTER OF EACH SECTION ── */
+.ch-spire-row {
+  padding: 0 3.5rem 60px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+
+.ch-spire-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 300;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--line);
+  white-space: nowrap;
+  padding-bottom: 2px;
+}
+
+/* ── INTERLUDE BAND ── */
+.interlude {
+  background: var(--ink);
+  padding: 70px 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.interlude::before {
+  content: 'DUBAI';
+  position: absolute;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 18vw;
+  letter-spacing: -0.04em;
+  color: rgba(255,255,255,0.03);
+  pointer-events: none;
+  user-select: none;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.int-line {
+  height: 1px;
+  flex: 1;
+}
+.int-line.red { background: linear-gradient(to right, transparent, var(--r)); }
+.int-line.blue { background: linear-gradient(to left, transparent, var(--b)); }
+
+.int-text {
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.5;
+  max-width: 480px;
+  flex-shrink: 0;
+}
+
+/* ── CLOSING ── */
+.closing {
+  background: var(--cream);
+  padding: 100px 3.5rem 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+}
+
+.closing-city {
+  position: absolute; bottom:0; left:0; right:0; line-height:0;
+}
+
+.closing-inner { position: relative; z-index:2; }
+
+.closing-pre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.55em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 2rem;
+}
+
+.closing-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--ink);
+  margin-bottom: 2.5rem;
+}
+
+.closing-headline em {
+  font-style: italic;
+  font-weight: 600;
+  background: linear-gradient(100deg, var(--r), var(--b));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.closing-dots {
+  display: flex; justify-content: center; gap: 0.6rem; margin-bottom: 1.8rem;
+}
+.closing-dots span {
+  width: 5px; height: 5px; border-radius: 50%;
+}
+.closing-dots .d1 { background: var(--r); }
+.closing-dots .d2 { background: var(--line); }
+.closing-dots .d3 { background: var(--b); }
+
+.closing-loc {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 200;
+  font-size: 0.68rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+/* ── SPRITE SCENES ── */
+.sprite-scene {
+  margin: 0 3.5rem 0;
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.red-scene { background: #f8f0f1; border-color: rgba(191,0,24,0.15); }
+.blue-scene { background: #f0f4fc; border-color: rgba(0,56,192,0.15); }
+
+.sprite-svg { width: 100%; display: block; }
+
+.scene-label {
+  position: absolute;
+  top: 1rem; right: 1.2rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.25);
+  z-index: 10;
+}
+
+/* ── REVEAL ANIMATIONS ── */
+@keyframes aUp {
+  from { opacity:0; transform:translateY(28px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@keyframes aRight {
+  from { opacity:0; transform:translateX(28px); }
+  to { opacity:1; transform:translateX(0); }
+}
+
+.rv {
+  opacity:0; transform:translateY(32px);
+  transition: opacity 0.85s cubic-bezier(.22,1,.36,1), transform 0.85s cubic-bezier(.22,1,.36,1);
+}
+.rv.on { opacity:1; transform:translateY(0); }
+.rv2 { transition-delay: 0.12s; }
+.rv3 { transition-delay: 0.24s; }
+.rv4 { transition-delay: 0.36s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-right .nav-pill { display:none; }
+  .hero-body { grid-template-columns:1fr; padding: 2rem 1.5rem 50vw; }
+  .hero-left { padding-right:0; }
+  .hero-right { padding-left:0; }
+  .ch-header, .ch-body, .ch-spire-row, .closing, .interlude { padding-left:1.5rem; padding-right:1.5rem; }
+  .ch-body { grid-template-columns:1fr; }
+  .ch-sidebar { border-right:none; border-bottom:1px solid var(--line); padding-right:0; padding-bottom:1.5rem; flex-direction:row; flex-wrap:wrap; gap:1.5rem; }
+  .ch-text { padding-left:0; margin-top:1.5rem; }
+  .interlude { flex-direction:column; gap:2rem; }
+  .diag-line { margin: 0 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-dot-r"></span>
+    <span class="nav-dot-b"></span>
+    <span class="nav-name">Dubai Diaries</span>
+  </div>
+  <div class="nav-right">
+    <a href="#autodrome" class="nav-pill red-pill">Day I</a>
+    <a href="#ski" class="nav-pill blue-pill">Day II</a>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-split"></div>
+  <div class="hero-noise"></div>
+
+  <!-- Skyline behind content -->
+  <div class="hero-skyline">
+    <svg viewBox="0 0 1440 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;display:block;">
+      <defs>
+        <linearGradient id="gR" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#bf0018;stop-opacity:0.2"/>
+          <stop offset="100%" style="stop-color:#bf0018;stop-opacity:0.04"/>
+        </linearGradient>
+        <linearGradient id="gB" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#0038c0;stop-opacity:0.2"/>
+          <stop offset="100%" style="stop-color:#0038c0;stop-opacity:0.04"/>
+        </linearGradient>
+        <linearGradient id="gN" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#999;stop-opacity:0.1"/>
+          <stop offset="100%" style="stop-color:#999;stop-opacity:0.02"/>
+        </linearGradient>
+      </defs>
+
+      <!-- LEFT RED CLUSTER -->
+      <rect x="0"   y="245" width="20" height="55" fill="url(#gR)"/>
+      <rect x="24"  y="228" width="16" height="72" fill="url(#gR)"/>
+      <rect x="44"  y="212" width="24" height="88" fill="url(#gR)"/>
+      <rect x="48"  y="198" width="16" height="16" fill="url(#gR)"/>
+      <rect x="52"  y="184" width="8"  height="16" fill="url(#gR)"/>
+      <!-- main red spire -->
+      <polygon points="75,300 80,78 84,55 88,78 93,300" fill="url(#gR)"/>
+      <rect x="82"  y="51"  width="4"  height="8"  fill="#bf0018" opacity="0.4"/>
+      <line x1="84" y1="55" x2="84" y2="16" stroke="#bf0018" stroke-width="1.2" opacity="0.3"/>
+      <circle cx="84" cy="15" r="2.5" fill="#bf0018" opacity="0.25"/>
+      <!-- window lights -->
+      <rect x="79" y="88"  width="2" height="2" fill="#bf0018" opacity="0.55"/>
+      <rect x="86" y="88"  width="2" height="2" fill="#bf0018" opacity="0.55"/>
+      <rect x="79" y="102" width="2" height="2" fill="#bf0018" opacity="0.45"/>
+      <rect x="86" y="102" width="2" height="2" fill="#bf0018" opacity="0.45"/>
+      <rect x="79" y="116" width="2" height="2" fill="#bf0018" opacity="0.35"/>
+      <rect x="86" y="116" width="2" height="2" fill="#bf0018" opacity="0.35"/>
+      <rect x="79" y="130" width="2" height="2" fill="#bf0018" opacity="0.25"/>
+      <rect x="86" y="130" width="2" height="2" fill="#bf0018" opacity="0.25"/>
+      <!-- supporting buildings -->
+      <rect x="100" y="200" width="22" height="100" fill="url(#gR)"/>
+      <rect x="103" y="188" width="16" height="14" fill="url(#gR)"/>
+      <rect x="127" y="220" width="16" height="80" fill="url(#gR)" opacity="0.8"/>
+      <!-- mini spire -->
+      <polygon points="148,300 151,162 153,148 155,162 158,300" fill="url(#gR)" opacity="0.65"/>
+      <line x1="153" y1="148" x2="153" y2="122" stroke="#bf0018" stroke-width="0.9" opacity="0.22"/>
+      <rect x="163" y="238" width="16" height="62" fill="url(#gR)" opacity="0.5"/>
+      <rect x="183" y="252" width="14" height="48" fill="url(#gR)" opacity="0.38"/>
+      <rect x="200" y="260" width="12" height="40" fill="url(#gR)" opacity="0.28"/>
+
+      <!-- TRANSITION GREY -->
+      <rect x="222" y="262" width="14" height="38" fill="url(#gN)"/>
+      <rect x="240" y="248" width="18" height="52" fill="url(#gN)"/>
+      <polygon points="263,300 266,195 269,180 272,195 275,300" fill="url(#gN)" opacity="0.6"/>
+      <rect x="280" y="255" width="16" height="45" fill="url(#gN)"/>
+      <rect x="300" y="268" width="12" height="32" fill="url(#gN)" opacity="0.5"/>
+
+      <!-- CENTER SPIRE -->
+      <rect x="560" y="250" width="14" height="50" fill="url(#gN)"/>
+      <polygon points="582,300 586,62 590,40 594,62 598,300" fill="url(#gN)"/>
+      <line x1="590" y1="40" x2="590" y2="8" stroke="#aaa" stroke-width="1.2" opacity="0.22"/>
+      <circle cx="590" cy="7" r="2" fill="#aaa" opacity="0.2"/>
+      <rect x="604" y="240" width="16" height="60" fill="url(#gN)"/>
+      <rect x="624" y="258" width="12" height="42" fill="url(#gN)" opacity="0.6"/>
+
+      <!-- TRANSITION RIGHT GREY -->
+      <rect x="880" y="265" width="12" height="35" fill="url(#gN)" opacity="0.5"/>
+      <rect x="896" y="250" width="16" height="50" fill="url(#gN)"/>
+      <polygon points="917,300 920,198 923,184 926,198 929,300" fill="url(#gN)" opacity="0.55"/>
+      <rect x="934" y="255" width="14" height="45" fill="url(#gN)"/>
+
+      <!-- RIGHT BLUE CLUSTER -->
+      <rect x="955" y="265" width="12" height="35" fill="url(#gB)" opacity="0.4"/>
+      <rect x="972" y="248" width="16" height="52" fill="url(#gB)" opacity="0.55"/>
+      <!-- mini blue spire -->
+      <polygon points="994,300 997,160 999,145 1001,160 1004,300" fill="url(#gB)" opacity="0.65"/>
+      <line x1="999" y1="145" x2="999" y2="118" stroke="#0038c0" stroke-width="0.9" opacity="0.22"/>
+      <rect x="1010" y="220" width="18" height="80" fill="url(#gB)" opacity="0.7"/>
+      <rect x="1013" y="207" width="12" height="15" fill="url(#gB)"/>
+      <!-- main blue spire -->
+      <polygon points="1035,300 1040,78 1044,55 1048,78 1053,300" fill="url(#gB)"/>
+      <rect x="1042" y="51" width="4"  height="8"  fill="#0038c0" opacity="0.4"/>
+      <line x1="1044" y1="55" x2="1044" y2="16" stroke="#0038c0" stroke-width="1.2" opacity="0.3"/>
+      <circle cx="1044" cy="15" r="2.5" fill="#0038c0" opacity="0.25"/>
+      <!-- window lights -->
+      <rect x="1039" y="88"  width="2" height="2" fill="#0038c0" opacity="0.55"/>
+      <rect x="1046" y="88"  width="2" height="2" fill="#0038c0" opacity="0.55"/>
+      <rect x="1039" y="102" width="2" height="2" fill="#0038c0" opacity="0.45"/>
+      <rect x="1046" y="102" width="2" height="2" fill="#0038c0" opacity="0.45"/>
+      <rect x="1039" y="116" width="2" height="2" fill="#0038c0" opacity="0.35"/>
+      <rect x="1046" y="116" width="2" height="2" fill="#0038c0" opacity="0.35"/>
+      <rect x="1039" y="130" width="2" height="2" fill="#0038c0" opacity="0.25"/>
+      <rect x="1046" y="130" width="2" height="2" fill="#0038c0" opacity="0.25"/>
+      <rect x="1060" y="205" width="20" height="95" fill="url(#gB)"/>
+      <rect x="1063" y="193" width="14" height="14" fill="url(#gB)"/>
+      <rect x="1085" y="225" width="16" height="75" fill="url(#gB)" opacity="0.75"/>
+      <rect x="1105" y="242" width="14" height="58" fill="url(#gB)" opacity="0.55"/>
+      <rect x="1123" y="255" width="12" height="45" fill="url(#gB)" opacity="0.4"/>
+      <rect x="1140" y="248" width="16" height="52" fill="url(#gB)" opacity="0.32"/>
+      <rect x="1160" y="260" width="14" height="40" fill="url(#gB)" opacity="0.24"/>
+      <rect x="1178" y="268" width="18" height="32" fill="url(#gB)" opacity="0.18"/>
+      <rect x="1200" y="272" width="14" height="28" fill="url(#gB)" opacity="0.13"/>
+      <rect x="1220" y="278" width="20" height="22" fill="url(#gB)" opacity="0.09"/>
+      <rect x="1250" y="274" width="16" height="26" fill="url(#gB)" opacity="0.07"/>
+      <rect x="1280" y="280" width="18" height="20" fill="url(#gB)" opacity="0.05"/>
+      <rect x="1310" y="283" width="20" height="17" fill="url(#gB)" opacity="0.04"/>
+      <rect x="1350" y="285" width="16" height="15" fill="url(#gB)" opacity="0.03"/>
+      <rect x="1390" y="287" width="20" height="13" fill="url(#gB)" opacity="0.02"/>
+      <rect x="1420" y="289" width="20" height="11" fill="url(#gB)" opacity="0.01"/>
+
+      <!-- ground -->
+      <rect x="0" y="298" width="1440" height="2" fill="#e2dfd9" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <div class="hero-body">
+    <div class="hero-left">
+      <p class="hero-eyebrow">A Weekend Chronicle &nbsp;·&nbsp; Dubai</p>
+      <h1 class="hero-headline">
+        <span class="hl-dubai">Dubai</span>
+        <span class="hl-diaries">Diaries</span>
+      </h1>
+      <p class="hero-sub-line">Two days. Two tracks. One city that never runs out of ways to surprise you.</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-tag-block">
+        <a href="#autodrome" class="hero-tag-item t-red">
+          <span class="tag-num">01</span>
+          <div class="tag-info">
+            <div class="tag-day">Saturday · Day One</div>
+            <div class="tag-place">Dubai Autodrome</div>
+          </div>
+          <span class="tag-arrow">→</span>
+        </a>
+        <a href="#ski" class="hero-tag-item t-blue" style="text-decoration:none;">
+          <span class="tag-num">02</span>
+          <div class="tag-info">
+            <div class="tag-day">Sunday · Day Two</div>
+            <div class="tag-place">Ski Dubai</div>
+          </div>
+          <span class="tag-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band"></div>
+
+<!-- ══════════ CHAPTER 1 ══════════ -->
+<section class="chapter red-ch" id="autodrome">
+
+  <div class="ch-header rv">
+    <span class="ch-index">01</span>
+    <div class="ch-title-block">
+      <p class="ch-overline">Saturday &nbsp;·&nbsp; Day One</p>
+      <h2 class="ch-title">Dubai <em>Autodrome</em></h2>
+    </div>
+    <div class="ch-day-badge">Karts &amp; Corner Lines<br>Motor City, Dubai</div>
+  </div>
+
+  <div class="diag-line rv rv2"></div>
+
+  <div class="ch-body">
+    <aside class="ch-sidebar rv">
+      <div>
+        <p class="sidebar-label">Location</p>
+        <p class="sidebar-val">Dubai Autodrome</p>
+        <span class="sidebar-tag">Motor City</span>
+      </div>
+      <div>
+        <p class="sidebar-label">Discipline</p>
+        <p class="sidebar-val">Go-Karting</p>
+      </div>
+      <div>
+        <p class="sidebar-label">Focus</p>
+        <p class="sidebar-val">Racing Lines &amp; Exits</p>
+      </div>
+    </aside>
+
+    <div class="ch-text rv rv2">
+      <p>There are lots of things to do in Dubai, so on my weekend I decided to do a race week. First stop, Dubai Autodrome. Everything there is designed amazingly. Small karts, hot tyres, everyone looking to outdo a lap — it was a great replica of an F1 track.</p>
+      <p>I was mainly looking at following my racing lines, and my exits. Every corner mattered. One tiny mistake and you lose time. And who would wanna lose to their friend now would they? — saying who had the fastest lap and who blew the last corner. Most of my laps were done well but I swerved on a pretty hard corner.</p>
+    </div>
+  </div>
+
+  <!-- GO-KART SPRITE SCENE -->
+  <div class="sprite-scene red-scene rv" id="kart-scene">
+    <div class="scene-label">Dubai Autodrome</div>
+    <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" class="sprite-svg" id="kart-svg">
+      <defs>
+        <linearGradient id="trackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#2a2a2a"/>
+          <stop offset="100%" style="stop-color:#1a1a1a"/>
+        </linearGradient>
+        <linearGradient id="kartBody" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#e8001f"/>
+          <stop offset="100%" style="stop-color:#8a0010"/>
+        </linearGradient>
+        <linearGradient id="kartBody2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#cc3300"/>
+          <stop offset="100%" style="stop-color:#7a1a00"/>
+        </linearGradient>
+        <filter id="blurF" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3"/>
+        </filter>
+        <filter id="softBlur">
+          <feGaussianBlur stdDeviation="1.2"/>
+        </filter>
+        <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#000;stop-opacity:0.35"/>
+          <stop offset="100%" style="stop-color:#000;stop-opacity:0"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Track surface -->
+      <rect x="0" y="130" width="700" height="70" fill="url(#trackGrad)" rx="0"/>
+      <!-- Track markings -->
+      <rect x="0" y="130" width="700" height="2" fill="#bf0018" opacity="0.6"/>
+      <rect x="0" y="198" width="700" height="2" fill="#bf0018" opacity="0.3"/>
+      <!-- Centre dashes (animated scrolling) -->
+      <g id="dash-group">
+        <rect x="0"   y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="90"  y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="180" y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="270" y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="360" y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="450" y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="540" y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <rect x="630" y="163" width="55" height="4" fill="white" opacity="0.18" rx="2"/>
+        <animateTransform attributeName="transform" type="translate" from="0,0" to="-90,0" dur="0.7s" repeatCount="indefinite"/>
+      </g>
+
+      <!-- Kerbing stripes left -->
+      <rect x="0" y="130" width="18" height="10" fill="#bf0018" opacity="0.8"/>
+      <rect x="18" y="130" width="18" height="10" fill="white" opacity="0.7"/>
+      <rect x="36" y="130" width="18" height="10" fill="#bf0018" opacity="0.8"/>
+      <rect x="54" y="130" width="18" height="10" fill="white" opacity="0.7"/>
+      <!-- Kerbing right -->
+      <rect x="682" y="130" width="18" height="10" fill="#bf0018" opacity="0.8"/>
+      <rect x="664" y="130" width="18" height="10" fill="white" opacity="0.7"/>
+
+      <!-- BACKGROUND KART 2 (behind) -->
+      <g id="kart2" transform="translate(380,0)">
+        <!-- kart 2 body -->
+        <rect x="0" y="98" width="68" height="22" fill="url(#kartBody2)" rx="4" opacity="0.85"/>
+        <rect x="10" y="88" width="42" height="14" fill="#cc3300" rx="3" opacity="0.9"/>
+        <!-- helmet driver 2 -->
+        <ellipse cx="42" cy="86" rx="10" ry="9" fill="#ff6600" opacity="0.9"/>
+        <ellipse cx="42" cy="87" rx="7" ry="4" fill="white" opacity="0.4"/>
+        <!-- wheels 2 -->
+        <circle cx="14" cy="122" r="9" fill="#111" opacity="0.85"/>
+        <circle cx="14" cy="122" r="5" fill="#333" opacity="0.85"/>
+        <circle cx="14" cy="122" r="2" fill="#888" opacity="0.7"/>
+        <circle cx="56" cy="122" r="9" fill="#111" opacity="0.85"/>
+        <circle cx="56" cy="122" r="5" fill="#333" opacity="0.85"/>
+        <circle cx="56" cy="122" r="2" fill="#888" opacity="0.7"/>
+        <!-- wheel spin kart2 -->
+        <animateTransform attributeName="transform" type="rotate" from="0 14 122" to="360 14 122" dur="0.25s" repeatCount="indefinite" additive="sum"/>
+      </g>
+
+      <!-- EXHAUST SMOKE kart 2 -->
+      <g id="smoke2">
+        <circle cx="378" cy="116" r="5" fill="#aaa" opacity="0">
+          <animate attributeName="cx" from="378" to="310" dur="0.8s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.3;0" dur="0.8s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="3;8;12" dur="0.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="378" cy="113" r="4" fill="#bbb" opacity="0">
+          <animate attributeName="cx" from="375" to="305" dur="0.9s" begin="0.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.25;0" dur="0.9s" begin="0.2s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="2;6;10" dur="0.9s" begin="0.2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- MAIN KART (foreground, closer/bigger) -->
+      <g id="kart1">
+        <!-- shadow -->
+        <ellipse cx="160" cy="134" rx="55" ry="8" fill="url(#shadowGrad)" opacity="0.6"/>
+
+        <!-- rear wing -->
+        <rect x="82" y="91" width="4" height="18" fill="#880010" rx="1"/>
+        <rect x="76" y="88" width="16" height="4" fill="#cc001a" rx="1"/>
+
+        <!-- kart floor/chassis -->
+        <rect x="84" y="107" width="88" height="24" fill="#2a2a2a" rx="6"/>
+
+        <!-- main body top -->
+        <rect x="88" y="96" width="80" height="18" fill="url(#kartBody)" rx="5"/>
+
+        <!-- nose cone -->
+        <polygon points="172,100 172,118 196,113 196,105" fill="#bf0018"/>
+        <polygon points="196,105 196,113 208,111 208,107" fill="#8a0010"/>
+
+        <!-- cockpit surround -->
+        <rect x="108" y="88" width="50" height="16" fill="#1a1a1a" rx="4"/>
+
+        <!-- DRIVER HELMET -->
+        <ellipse cx="138" cy="85" rx="14" ry="13" fill="#bf0018"/>
+        <ellipse cx="138" cy="85" rx="12" ry="10" fill="#d40018"/>
+        <!-- visor -->
+        <path d="M126,83 Q138,76 150,83 L150,88 Q138,92 126,88 Z" fill="#111" opacity="0.85"/>
+        <path d="M128,84 Q138,78 148,84" stroke="white" stroke-width="1" fill="none" opacity="0.4"/>
+        <!-- helmet stripe -->
+        <rect x="136" y="74" width="4" height="22" fill="white" opacity="0.25" rx="1"/>
+
+        <!-- WHEELS front -->
+        <g id="wheel-fr">
+          <circle cx="180" cy="127" r="12" fill="#111"/>
+          <circle cx="180" cy="127" r="8" fill="#222"/>
+          <circle cx="180" cy="127" r="3" fill="#666"/>
+          <line x1="180" y1="115" x2="180" y2="139" stroke="#444" stroke-width="1.5"/>
+          <line x1="168" y1="127" x2="192" y2="127" stroke="#444" stroke-width="1.5"/>
+          <animateTransform attributeName="transform" type="rotate" from="0 180 127" to="360 180 127" dur="0.2s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- WHEELS rear -->
+        <g id="wheel-rr">
+          <circle cx="96" cy="127" r="14" fill="#111"/>
+          <circle cx="96" cy="127" r="9" fill="#222"/>
+          <circle cx="96" cy="127" r="4" fill="#666"/>
+          <line x1="96" y1="113" x2="96" y2="141" stroke="#444" stroke-width="1.5"/>
+          <line x1="82" y1="127" x2="110" y2="127" stroke="#444" stroke-width="1.5"/>
+          <animateTransform attributeName="transform" type="rotate" from="0 96 127" to="360 96 127" dur="0.2s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- Number plate -->
+        <rect x="150" y="100" width="20" height="12" fill="white" rx="2" opacity="0.9"/>
+        <text x="160" y="109" font-size="7" font-family="Arial" font-weight="bold" text-anchor="middle" fill="#bf0018">7</text>
+
+        <!-- Body racing stripe -->
+        <rect x="88" y="102" width="80" height="3" fill="white" opacity="0.15" rx="1"/>
+
+        <!-- subtle body bounce -->
+        <animateTransform attributeName="transform" type="translate" values="0,0;0,-1.5;0,0.5;0,-1;0,0" dur="0.18s" repeatCount="indefinite"/>
+      </g>
+
+      <!-- SPEED LINES -->
+      <g id="speed-lines" opacity="0.55">
+        <line x1="30" y1="104" x2="80" y2="104" stroke="#bf0018" stroke-width="1.5" stroke-linecap="round">
+          <animate attributeName="x1" values="80;0;80" dur="0.35s" repeatCount="indefinite"/>
+          <animate attributeName="x2" values="130;60;130" dur="0.35s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="0.35s" repeatCount="indefinite"/>
+        </line>
+        <line x1="20" y1="112" x2="78" y2="112" stroke="#ff3344" stroke-width="1" stroke-linecap="round">
+          <animate attributeName="x1" values="78;-10;78" dur="0.28s" begin="0.05s" repeatCount="indefinite"/>
+          <animate attributeName="x2" values="118;40;118" dur="0.28s" begin="0.05s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0.1;0.6" dur="0.28s" begin="0.05s" repeatCount="indefinite"/>
+        </line>
+        <line x1="35" y1="120" x2="82" y2="120" stroke="#bf0018" stroke-width="2" stroke-linecap="round">
+          <animate attributeName="x1" values="82;5;82" dur="0.4s" begin="0.1s" repeatCount="indefinite"/>
+          <animate attributeName="x2" values="128;55;128" dur="0.4s" begin="0.1s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.5;0.1;0.5" dur="0.4s" begin="0.1s" repeatCount="indefinite"/>
+        </line>
+        <line x1="10" y1="97" x2="55" y2="97" stroke="#ff6677" stroke-width="0.8" stroke-linecap="round">
+          <animate attributeName="x1" values="55;-20;55" dur="0.22s" begin="0.08s" repeatCount="indefinite"/>
+          <animate attributeName="x2" values="90;25;90" dur="0.22s" begin="0.08s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.4;0;0.4" dur="0.22s" begin="0.08s" repeatCount="indefinite"/>
+        </line>
+      </g>
+
+      <!-- EXHAUST puffs main kart -->
+      <g>
+        <circle cx="82" cy="115" r="5" fill="#999" opacity="0">
+          <animate attributeName="cx" from="82" to="20" dur="0.6s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.45;0" dur="0.6s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="3;9;14" dur="0.6s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="82" cy="112" r="4" fill="#bbb" opacity="0">
+          <animate attributeName="cx" from="80" to="15" dur="0.7s" begin="0.15s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.3;0" dur="0.7s" begin="0.15s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="2;7;11" dur="0.7s" begin="0.15s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- TYRE MARKS -->
+      <rect x="0" y="139" width="700" height="2" fill="#111" opacity="0.3" rx="1"/>
+      <rect x="0" y="115" width="700" height="1.5" fill="#111" opacity="0.2" rx="1"/>
+    </svg>
+  </div>
+
+  <div class="ch-spire-row rv">
+    <span class="ch-spire-label">End of Day One</span>
+    <svg viewBox="0 0 280 45" style="width:200px;height:32px;opacity:0.14;" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,45 22,18 24,8 26,18 28,45" fill="#bf0018"/>
+      <polygon points="34,45 35,24 36,16 37,24 38,45" fill="#bf0018"/>
+      <polygon points="45,45 46,28 47,22 48,28 49,45" fill="#bf0018"/>
+      <polygon points="120,45 124,4 128,0 132,4 136,45" fill="#bf0018"/>
+      <polygon points="140,45 141,22 142,15 143,22 144,45" fill="#bf0018"/>
+      <polygon points="150,45 151,27 152,20 153,27 154,45" fill="#bf0018"/>
+      <line x1="128" y1="0" x2="128" y2="-4" stroke="#bf0018" stroke-width="1.2"/>
+      <rect x="0" y="43" width="280" height="1" fill="#bf0018" opacity="0.4"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════ INTERLUDE ══════════ -->
+<div class="interlude">
+  <div class="int-line red"></div>
+  <p class="int-text">From the heat of the track to the cold of the slopes — Dubai holds both worlds.</p>
+  <div class="int-line blue"></div>
+</div>
+
+<!-- ══════════ CHAPTER 2 ══════════ -->
+<section class="chapter blue-ch" id="ski">
+
+  <div class="ch-header rv">
+    <span class="ch-index">02</span>
+    <div class="ch-title-block">
+      <p class="ch-overline">Sunday &nbsp;·&nbsp; Day Two</p>
+      <h2 class="ch-title">Ski <em>Dubai</em></h2>
+    </div>
+    <div class="ch-day-badge">Slopes &amp; Ski Lifts<br>Mall of the Emirates</div>
+  </div>
+
+  <div class="diag-line rv rv2"></div>
+
+  <div class="ch-body">
+    <aside class="ch-sidebar rv">
+      <div>
+        <p class="sidebar-label">Location</p>
+        <p class="sidebar-val">Ski Dubai</p>
+        <span class="sidebar-tag">Mall of the Emirates</span>
+      </div>
+      <div>
+        <p class="sidebar-label">Discipline</p>
+        <p class="sidebar-val">Ski Racing</p>
+      </div>
+      <div>
+        <p class="sidebar-label">Reminder</p>
+        <p class="sidebar-val">No Wrestling on Lifts</p>
+      </div>
+    </aside>
+
+    <div class="ch-text rv rv2">
+      <p>Sunday we changed the whole thing but still racing. I went to the Mall of the Emirates with some friends and went directly into Ski Dubai. I loved the cold. It reminded me of the snow covered mountains in the Himalayas.</p>
+      <p>As someone who had done ski racing it was no bother than going on a pretty small track. I went on the comfy ski lift with my friend where he started to wrestle me when I was like 50ft in the air — pretty dumb. But either way once we reached the top we went down like a cheetah. The skiing was really fun at the cost of getting a cold.</p>
+    </div>
+  </div>
+
+  <!-- SKIER SPRITE SCENE -->
+  <div class="sprite-scene blue-scene rv" id="ski-scene">
+    <div class="scene-label">Ski Dubai</div>
+    <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" class="sprite-svg" id="ski-svg">
+      <defs>
+        <linearGradient id="slopeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#e8f0ff"/>
+          <stop offset="100%" style="stop-color:#c8d8f8"/>
+        </linearGradient>
+        <linearGradient id="skiBody" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#0052ff"/>
+          <stop offset="100%" style="stop-color:#002299"/>
+        </linearGradient>
+        <linearGradient id="snowSlope" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#f0f6ff"/>
+          <stop offset="100%" style="stop-color:#dce8ff"/>
+        </linearGradient>
+        <filter id="snowGlow">
+          <feGaussianBlur stdDeviation="2"/>
+        </filter>
+      </defs>
+
+      <!-- SKY -->
+      <rect x="0" y="0" width="700" height="140" fill="url(#slopeGrad)" opacity="0.4"/>
+
+      <!-- SLOPE surface -->
+      <polygon points="0,80 700,140 700,220 0,220" fill="url(#snowSlope)"/>
+      <!-- slope shading -->
+      <polygon points="0,80 700,140 700,148 0,92" fill="white" opacity="0.5"/>
+
+      <!-- Ski slope texture lines -->
+      <g opacity="0.12" stroke="#0038c0" stroke-width="0.8">
+        <line x1="0" y1="100" x2="700" y2="155"/>
+        <line x1="0" y1="115" x2="700" y2="170"/>
+        <line x1="0" y1="130" x2="700" y2="185"/>
+        <line x1="0" y1="145" x2="700" y2="200"/>
+        <line x1="0" y1="160" x2="700" y2="215"/>
+      </g>
+
+      <!-- Gate poles (ski course) -->
+      <g id="gates">
+        <rect x="200" y="95" width="4" height="60" fill="#bf0018" opacity="0.8" rx="2"/>
+        <rect x="212" y="95" width="4" height="60" fill="#0038c0" opacity="0.8" rx="2"/>
+        <circle cx="202" cy="94" r="5" fill="#bf0018" opacity="0.9"/>
+        <circle cx="214" cy="94" r="5" fill="#0038c0" opacity="0.9"/>
+        <!-- gate flag -->
+        <rect x="202" y="80" width="14" height="9" fill="#bf0018" opacity="0.7" rx="1"/>
+
+        <rect x="460" y="108" width="4" height="60" fill="#bf0018" opacity="0.8" rx="2"/>
+        <rect x="472" y="108" width="4" height="60" fill="#0038c0" opacity="0.8" rx="2"/>
+        <circle cx="462" cy="107" r="5" fill="#bf0018" opacity="0.9"/>
+        <circle cx="474" cy="107" r="5" fill="#0038c0" opacity="0.9"/>
+        <rect x="462" y="93" width="14" height="9" fill="#0038c0" opacity="0.7" rx="1"/>
+      </g>
+
+      <!-- SNOW PARTICLES (background floating) -->
+      <g id="snow-particles">
+        <circle cx="50"  cy="40"  r="3" fill="white" opacity="0.8"><animate attributeName="cy" values="40;220" dur="4s" repeatCount="indefinite"/><animate attributeName="cx" values="50;65" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="150" cy="10"  r="2" fill="white" opacity="0.7"><animate attributeName="cy" values="10;220" dur="5.5s" begin="1s" repeatCount="indefinite"/><animate attributeName="cx" values="150;168" dur="5.5s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0" dur="5.5s" begin="1s" repeatCount="indefinite"/></circle>
+        <circle cx="320" cy="20"  r="2.5" fill="white" opacity="0.75"><animate attributeName="cy" values="20;220" dur="4.8s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="cx" values="320;340" dur="4.8s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.75;0" dur="4.8s" begin="0.5s" repeatCount="indefinite"/></circle>
+        <circle cx="480" cy="5"   r="2" fill="white" opacity="0.6"><animate attributeName="cy" values="5;220" dur="6s" begin="2s" repeatCount="indefinite"/><animate attributeName="cx" values="480;500" dur="6s" begin="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0" dur="6s" begin="2s" repeatCount="indefinite"/></circle>
+        <circle cx="580" cy="30"  r="3" fill="white" opacity="0.7"><animate attributeName="cy" values="30;220" dur="5s" begin="1.5s" repeatCount="indefinite"/><animate attributeName="cx" values="580;598" dur="5s" begin="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0" dur="5s" begin="1.5s" repeatCount="indefinite"/></circle>
+        <circle cx="680" cy="50"  r="2" fill="white" opacity="0.65"><animate attributeName="cy" values="50;220" dur="4.2s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="cx" values="680;694" dur="4.2s" begin="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.65;0" dur="4.2s" begin="0.8s" repeatCount="indefinite"/></circle>
+        <circle cx="100" cy="60"  r="2" fill="white" opacity="0.5"><animate attributeName="cy" values="60;220" dur="3.8s" begin="3s" repeatCount="indefinite"/><animate attributeName="cx" values="100;115" dur="3.8s" begin="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0" dur="3.8s" begin="3s" repeatCount="indefinite"/></circle>
+        <circle cx="410" cy="15"  r="1.5" fill="white" opacity="0.6"><animate attributeName="cy" values="15;220" dur="5.2s" begin="2.5s" repeatCount="indefinite"/><animate attributeName="cx" values="410;425" dur="5.2s" begin="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0" dur="5.2s" begin="2.5s" repeatCount="indefinite"/></circle>
+      </g>
+
+      <!-- SKIER character (animated down slope, carving) -->
+      <g id="skier">
+        <!-- shadow on snow -->
+        <ellipse cx="350" cy="142" rx="22" ry="5" fill="#0038c0" opacity="0.12"/>
+
+        <!-- SKIS -->
+        <g id="ski-left">
+          <rect x="318" y="148" width="52" height="5" fill="#0038c0" rx="2"/>
+          <rect x="366" y="146" width="8" height="7" fill="#0052ff" rx="2"/>
+        </g>
+        <g id="ski-right">
+          <rect x="322" y="153" width="52" height="5" fill="#001a80" rx="2"/>
+          <rect x="370" y="151" width="8" height="7" fill="#0038c0" rx="2"/>
+        </g>
+
+        <!-- ski poles -->
+        <line x1="330" y1="120" x2="315" y2="150" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="315" cy="151" r="4" fill="#888" opacity="0.7"/>
+        <line x1="368" y1="118" x2="385" y2="148" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="385" cy="149" r="4" fill="#888" opacity="0.7"/>
+
+        <!-- LEGS -->
+        <line x1="340" y1="130" x2="335" y2="150" stroke="#003399" stroke-width="6" stroke-linecap="round"/>
+        <line x1="353" y1="130" x2="358" y2="150" stroke="#003399" stroke-width="6" stroke-linecap="round"/>
+
+        <!-- BODY -->
+        <rect x="332" y="105" width="26" height="28" fill="url(#skiBody)" rx="5"/>
+        <!-- jacket stripes -->
+        <rect x="332" y="110" width="26" height="3" fill="white" opacity="0.25" rx="1"/>
+        <rect x="332" y="117" width="26" height="2" fill="#66aaff" opacity="0.35" rx="1"/>
+
+        <!-- ARMS -->
+        <line x1="332" y1="113" x2="320" y2="125" stroke="#0038c0" stroke-width="5" stroke-linecap="round"/>
+        <line x1="358" y1="113" x2="372" y2="123" stroke="#0038c0" stroke-width="5" stroke-linecap="round"/>
+
+        <!-- HELMET -->
+        <ellipse cx="345" cy="100" rx="14" ry="13" fill="#0038c0"/>
+        <ellipse cx="345" cy="100" rx="12" ry="11" fill="#0052ff"/>
+        <!-- visor -->
+        <path d="M333,98 Q345,90 357,98 L357,104 Q345,108 333,104 Z" fill="#001155" opacity="0.9"/>
+        <path d="M335,99 Q345,93 355,99" stroke="white" stroke-width="1" fill="none" opacity="0.4"/>
+        <!-- goggle strap -->
+        <rect x="343" y="88" width="4" height="24" fill="white" opacity="0.2" rx="1"/>
+
+        <!-- skier body carve — gentle side-to-side -->
+        <animateTransform attributeName="transform" type="translate" values="0,0; 3,-1; -3,1; 0,0" dur="1.2s" repeatCount="indefinite"/>
+      </g>
+
+      <!-- SNOW SPRAY from skis -->
+      <g id="snow-spray">
+        <circle cx="320" cy="150" r="4" fill="white" opacity="0">
+          <animate attributeName="cx" values="320;295;270" dur="0.5s" repeatCount="indefinite"/>
+          <animate attributeName="cy" values="150;143;132" dur="0.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.9;0" dur="0.5s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="3;6;2" dur="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="320" cy="153" r="3" fill="white" opacity="0">
+          <animate attributeName="cx" values="320;292;262" dur="0.55s" begin="0.1s" repeatCount="indefinite"/>
+          <animate attributeName="cy" values="153;147;138" dur="0.55s" begin="0.1s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.8;0" dur="0.55s" begin="0.1s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="2;5;1" dur="0.55s" begin="0.1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="375" cy="152" r="4" fill="white" opacity="0">
+          <animate attributeName="cx" values="375;400;424" dur="0.5s" begin="0.05s" repeatCount="indefinite"/>
+          <animate attributeName="cy" values="152;145;134" dur="0.5s" begin="0.05s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.85;0" dur="0.5s" begin="0.05s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="3;6;2" dur="0.5s" begin="0.05s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="375" cy="155" r="3" fill="white" opacity="0">
+          <animate attributeName="cx" values="375;403;428" dur="0.6s" begin="0.15s" repeatCount="indefinite"/>
+          <animate attributeName="cy" values="155;149;140" dur="0.6s" begin="0.15s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0;0.7;0" dur="0.6s" begin="0.15s" repeatCount="indefinite"/>
+          <animate attributeName="r" values="2;5;1" dur="0.6s" begin="0.15s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- SKI LIFT in bg -->
+      <g opacity="0.35">
+        <!-- cable -->
+        <line x1="0" y1="30" x2="700" y2="50" stroke="#888" stroke-width="2"/>
+        <!-- poles -->
+        <rect x="140" y="30" width="5" height="55" fill="#666" rx="2"/>
+        <rect x="340" y="35" width="5" height="50" fill="#666" rx="2"/>
+        <rect x="540" y="38" width="5" height="48" fill="#666" rx="2"/>
+        <!-- gondola -->
+        <rect x="80" y="24" width="28" height="18" fill="#0038c0" rx="3" opacity="0.8"/>
+        <rect x="83" y="27" width="8" height="10" fill="white" opacity="0.5" rx="1"/>
+        <rect x="95" y="27" width="8" height="10" fill="white" opacity="0.5" rx="1"/>
+        <line x1="94" y1="24" x2="94" y2="18" stroke="#888" stroke-width="1.5"/>
+        <!-- gondola moves along cable -->
+        <animateTransform attributeName="transform" type="translate" values="0,0;580,16;0,0" dur="12s" repeatCount="indefinite"/>
+      </g>
+
+      <!-- bottom snow drifts -->
+      <ellipse cx="100" cy="218" rx="80" ry="12" fill="white" opacity="0.6"/>
+      <ellipse cx="600" cy="215" rx="100" ry="10" fill="white" opacity="0.5"/>
+      <ellipse cx="350" cy="220" rx="140" ry="8" fill="white" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <div class="ch-spire-row rv">
+    <span class="ch-spire-label">End of Day Two</span>
+    <svg viewBox="0 0 280 45" style="width:200px;height:32px;opacity:0.14;" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,45 22,18 24,8 26,18 28,45" fill="#0038c0"/>
+      <polygon points="34,45 35,24 36,16 37,24 38,45" fill="#0038c0"/>
+      <polygon points="45,45 46,28 47,22 48,28 49,45" fill="#0038c0"/>
+      <polygon points="120,45 124,4 128,0 132,4 136,45" fill="#0038c0"/>
+      <polygon points="140,45 141,22 142,15 143,22 144,45" fill="#0038c0"/>
+      <polygon points="150,45 151,27 152,20 153,27 154,45" fill="#0038c0"/>
+      <line x1="128" y1="0" x2="128" y2="-4" stroke="#0038c0" stroke-width="1.2"/>
+      <rect x="0" y="43" width="280" height="1" fill="#0038c0" opacity="0.4"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════ CLOSING ══════════ -->
+<footer class="closing">
+  <!-- Closing city silhouette -->
+  <div class="closing-city">
+    <svg viewBox="0 0 1440 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="width:100%;display:block;">
+      <defs>
+        <linearGradient id="cgf" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#bf0018;stop-opacity:0.12"/>
+          <stop offset="40%" style="stop-color:#aaa;stop-opacity:0.07"/>
+          <stop offset="100%" style="stop-color:#0038c0;stop-opacity:0.12"/>
+        </linearGradient>
+      </defs>
+      <rect x="30"  y="130" width="12" height="50" fill="url(#cgf)"/>
+      <rect x="46"  y="115" width="10" height="65" fill="url(#cgf)"/>
+      <polygon points="62,180 65,55 68,40 71,55 74,180" fill="url(#cgf)"/>
+      <line x1="68" y1="40" x2="68" y2="12" stroke="url(#cgf)" stroke-width="1.2"/>
+      <rect x="80"  y="98"  width="16" height="82" fill="url(#cgf)"/>
+      <rect x="100" y="118" width="12" height="62" fill="url(#cgf)"/>
+      <rect x="116" y="132" width="10" height="48" fill="url(#cgf)"/>
+      <rect x="140" y="128" width="14" height="52" fill="url(#cgf)"/>
+      <rect x="250" y="138" width="10" height="42" fill="url(#cgf)"/>
+      <!-- center -->
+      <polygon points="620,180 625,30 630,10 635,30 640,180" fill="url(#cgf)"/>
+      <line x1="630" y1="10" x2="630" y2="-4" stroke="url(#cgf)" stroke-width="1.2"/>
+      <rect x="648" y="110" width="14" height="70" fill="url(#cgf)"/>
+      <rect x="668" y="128" width="12" height="52" fill="url(#cgf)"/>
+      <!-- right -->
+      <rect x="1050" y="132" width="10" height="48" fill="url(#cgf)"/>
+      <rect x="1064" y="118" width="12" height="62" fill="url(#cgf)"/>
+      <rect x="1080" y="98"  width="16" height="82" fill="url(#cgf)"/>
+      <polygon points="1102,180 1105,55 1108,40 1111,55 1114,180" fill="url(#cgf)"/>
+      <line x1="1108" y1="40" x2="1108" y2="12" stroke="url(#cgf)" stroke-width="1.2"/>
+      <rect x="1120" y="115" width="10" height="65" fill="url(#cgf)"/>
+      <rect x="1134" y="130" width="12" height="50" fill="url(#cgf)"/>
+      <rect x="1150" y="140" width="14" height="40" fill="url(#cgf)"/>
+      <rect x="1170" y="132" width="10" height="48" fill="url(#cgf)"/>
+      <rect x="1200" y="142" width="16" height="38" fill="url(#cgf)" opacity="0.7"/>
+      <rect x="1240" y="148" width="14" height="32" fill="url(#cgf)" opacity="0.5"/>
+      <rect x="1280" y="152" width="18" height="28" fill="url(#cgf)" opacity="0.35"/>
+      <rect x="1330" y="155" width="16" height="25" fill="url(#cgf)" opacity="0.22"/>
+      <rect x="1380" y="158" width="20" height="22" fill="url(#cgf)" opacity="0.12"/>
+      <rect x="1420" y="160" width="20" height="20" fill="url(#cgf)" opacity="0.06"/>
+      <rect x="0" y="178" width="1440" height="2" fill="#e2dfd9" opacity="0.5"/>
+    </svg>
+  </div>
+
+  <div class="closing-inner rv">
+    <p class="closing-pre">Until the next one &nbsp;·&nbsp; Dubai, UAE</p>
+    <h2 class="closing-headline">Dubai is filled with<br><em>multiple attractions</em><br>and this is barely any of it.</h2>
+    <div class="closing-dots">
+      <span class="d1"></span>
+      <span class="d2"></span>
+      <span class="d3"></span>
+    </div>
+    <p class="closing-loc">Dubai &nbsp;·&nbsp; UAE &nbsp;·&nbsp; 2025</p>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cur = document.getElementById('cur');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top = e.clientY + 'px';
+  });
+
+  // Scroll reveals
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
